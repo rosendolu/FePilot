@@ -2,7 +2,7 @@
     "name": "node-dependencies",
     "displayName": "Node Dependencies",
     "description": "Advanced VS Code extension for npm package management with graphical dependency visualization, hover information, visual package operations, and monorepo support.",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "publisher": "rosendolu",
     "license": "Apache-2.0",
     "repository": {
@@ -152,7 +152,7 @@
         "format": "npx prettier --write .",
         "watch": "tsc -watch -p ./",
         "lint": "eslint",
-        "changelog": "npx -y standard-version",
+        "changelog": "npx standard-version",
         "package": "npx -y vsce package",
         "version:patch": "npm version patch && npm run publish",
         "version:minor": "npm version minor && npm run publish",
@@ -166,7 +166,8 @@
         "@types/vscode": "^1.99.0",
         "eslint": "^9.13.0",
         "typescript": "catalog:",
-        "typescript-eslint": "^8.39.0"
+        "typescript-eslint": "^8.39.0",
+        "standard-version": "catalog:"
     },
     "packageManager": "pnpm@10.18.3+sha512.bbd16e6d7286fd7e01f6b3c0b3c932cda2965c06a908328f74663f10a9aea51f1129eea615134bf992831b009eabe167ecb7008b597f40ff9bc75946aadfb08d"
 }
