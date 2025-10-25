@@ -1,9 +1,10 @@
 {
-    "name": "node-dependencies",
-    "displayName": "Node Dependencies",
+    "name": "node-deps-tree",
+    "displayName": "Node Deps Tree",
     "description": "Advanced VS Code extension for npm package management with graphical dependency visualization, hover information, visual package operations, and monorepo support.",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "publisher": "rosendolu",
+    "icon": "resources/node-dependencies.png",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
@@ -29,9 +30,8 @@
         "vscode": "^1.99.0"
     },
     "categories": [
-        "Package Managers",
-        "Visualization",
-        "Other"
+        "Other",
+        "Visualization"
     ],
     "activationEvents": [
         "workspaceContains:package.json"

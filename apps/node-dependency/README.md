@@ -2,7 +2,7 @@
 
 Node Dependencies is a powerful VS Code extension that provides comprehensive npm package management capabilities with advanced visualization and monorepo support. It offers graphical dependency visualization, intelligent package management, and seamless monorepo integration.
 
-![alt text](resources/node-dependency.gif)
+![Node Dependencies Demo](https://raw.githubusercontent.com/rosendolu/FePilot/main/apps/node-dependency/resources/node-dependency.gif)
 
 ## Features
 
@@ -28,7 +28,7 @@ Node Dependencies is a powerful VS Code extension that provides comprehensive np
 ### 📋 Dependencies View
 
 The main interface shows your project's dependencies organized in a clean tree structure within the Package Explorer panel:
-![alt text](resources/view.png)
+![Dependencies View](https://raw.githubusercontent.com/rosendolu/FePilot/main/apps/node-dependency/resources/view.png)
 
 ## Usage
 
