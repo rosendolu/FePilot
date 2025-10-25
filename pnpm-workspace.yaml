@@ -1,0 +1,10 @@
+packages:
+    - apps/*
+    - packages/*
+linkWorkspacePackages: true
+# includeWorkspaceRoot: true
+catalog:
+    dayjs: 1.11.18,
+    lodash-es: 4.17.21,
+    typescript: 5.9.3
+    vsce: 2.15.0

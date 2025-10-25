@@ -1,0 +1,28 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Node Dependency",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceRoot}",
+                "--enable-proposed-api",
+                "node-dependency"
+            ],
+            "sourceMaps": true,
+            "outFiles": ["${workspaceRoot}/out/**/*.js"],
+            "preLaunchTask": "npm: watch"
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Node Dependency",
+            "port": 5870,
+            "restart": true,
+            "outFiles": ["${workspaceRoot}/out"]
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "name": "FePilot",
+    "version": "1.0.0",
+    "description": "A collection of VS Code extensions for  speed up your development workflow",
+    "scripts": {
+        "build:node-dependency": "pnpm --filter node-dependency build",
+        "build": "pnpm -r run build",
+        "test": "pnpm -r run test",
+        "lint": "pnpm -r run lint"
+    },
+    "keywords": [
+        "VS Code Extension",
+        "Node Dependency Manager",
+        "NPM Package Manager",
+        "React Component Manager"
+    ],
+    "author": {
+        "name": "Rosendolu",
+        "email": "rosendolu@gmail.com",
+        "url": "https://github.com/rosendolu"
+    },
+    "homepage": "https://github.com/rosendolu/FePilot",
+    "bugs": {
+        "url": "https://github.com/rosendolu/FePilot/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rosendolu/FePilot.git"
+    },
+    "license": "Apache-2.0",
+    "packageManager": "pnpm@10.18.3"
+}
