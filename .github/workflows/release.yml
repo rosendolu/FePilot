@@ -1,0 +1,131 @@
+name: Release VS Code Extensions
+
+on:
+    workflow_dispatch:
+        inputs:
+            app_name:
+                description: 'Select the app to release'
+                required: true
+                type: choice
+                options:
+                    - node-deps-tree
+                    - npm-package-info
+            version_type:
+                description: 'Version bump type'
+                required: true
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+                default: patch
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10.18.3
+
+            - name: Get app directory
+              id: app-dir
+              run: |
+                  case "${{ github.event.inputs.app_name }}" in
+                    "node-deps-tree")
+                      echo "app_dir=apps/node-dependency" >> $GITHUB_OUTPUT
+                      ;;
+                    "npm-package-info")
+                      echo "app_dir=apps/npm-package-info" >> $GITHUB_OUTPUT
+                      ;;
+                    *)
+                      echo "Unknown app: ${{ github.event.inputs.app_name }}"
+                      exit 1
+                      ;;
+                  esac
+
+            - name: Install dependencies
+              run: |
+                  pnpm install --frozen-lockfile
+
+            - name: Build project
+              run: |
+                  pnpm --filter ${{ steps.app-dir.outputs.app_dir }} run compile
+
+            # - name: Update version
+            #   run: |
+            #       cd ${{ steps.app-dir.outputs.app_dir }}
+            #       npm version ${{ github.event.inputs.version_type }} --no-git-tag-version
+
+            - name: Package extension
+              run: |
+                  cd ${{ steps.app-dir.outputs.app_dir }}
+                  npx vsce package --no-dependencies
+
+            - name: Get package info
+              id: package-info
+              run: |
+                  cd ${{ steps.app-dir.outputs.app_dir }}
+                  PACKAGE_NAME=$(node -p "require('./package.json').name")
+                  PACKAGE_VERSION=$(node -p "require('./package.json').version")
+                  PACKAGE_DISPLAY_NAME=$(node -p "require('./package.json').displayName || '$PACKAGE_NAME'")
+                  PACKAGE_DESCRIPTION=$(node -p "require('./package.json').description || ''")
+
+                  echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+                  echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+                  echo "package_display_name=$PACKAGE_DISPLAY_NAME" >> $GITHUB_OUTPUT
+                  echo "package_description=$PACKAGE_DESCRIPTION" >> $GITHUB_OUTPUT
+
+            - name: Create Release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ steps.package-info.outputs.package_name }}-v${{ steps.package-info.outputs.package_version }}
+                  release_name: ${{ steps.package-info.outputs.package_display_name }} v${{ steps.package-info.outputs.package_version }}
+                  body: |
+                      ## ${{ steps.package-info.outputs.package_display_name }} v${{ steps.package-info.outputs.package_version }}
+
+                      ${{ steps.package-info.outputs.package_description }}
+
+                      ### Installation
+                      1. Download the `.vsix` file from the assets below
+                      2. Open VS Code
+                      3. Go to Extensions (Ctrl+Shift+X)
+                      4. Click the "..." menu and select "Install from VSIX..."
+                      5. Select the downloaded `.vsix` file
+
+                      ### Changes
+                      - Version bump: ${{ github.event.inputs.version_type }}
+                  draft: false
+                  prerelease: false
+
+            - name: Upload Release Asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ${{ steps.app-dir.outputs.app_dir }}/${{ steps.package-info.outputs.package_name }}-${{ steps.package-info.outputs.package_version }}.vsix
+                  asset_name: ${{ steps.package-info.outputs.package_name }}-${{ steps.package-info.outputs.package_version }}.vsix
+                  asset_content_type: application/octet-stream
+
+            # - name: Commit version changes
+            #   run: |
+            #       git config --local user.email "action@github.com"
+            #       git config --local user.name "GitHub Action"
+            #       git add ${{ steps.app-dir.outputs.app_dir }}/package.json
+            #       git commit -m "chore: bump ${{ steps.package-info.outputs.package_name }} to v${{ steps.package-info.outputs.package_version }}"
+            #       git push
