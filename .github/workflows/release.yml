@@ -20,6 +20,10 @@ on:
                     - major
                 default: patch
 
+permissions:
+    contents: write
+    pull-requests: write
+
 jobs:
     release:
         runs-on: ubuntu-latest
@@ -72,7 +76,7 @@ jobs:
             - name: Package extension
               run: |
                   cd ${{ steps.app-dir.outputs.app_dir }}
-                  npx vsce package --no-dependencies
+                  npx vsce package
 
             - name: Get package info
               id: package-info
@@ -89,12 +93,11 @@ jobs:
                   echo "package_description=$PACKAGE_DESCRIPTION" >> $GITHUB_OUTPUT
 
             - name: Create Release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              id: create_release
+              uses: softprops/action-gh-release@v2
               with:
                   tag_name: ${{ steps.package-info.outputs.package_name }}-v${{ steps.package-info.outputs.package_version }}
-                  release_name: ${{ steps.package-info.outputs.package_display_name }} v${{ steps.package-info.outputs.package_version }}
+                  name: ${{ steps.package-info.outputs.package_display_name }} v${{ steps.package-info.outputs.package_version }}
                   body: |
                       ## ${{ steps.package-info.outputs.package_display_name }} v${{ steps.package-info.outputs.package_version }}
 
@@ -109,18 +112,9 @@ jobs:
 
                       ### Changes
                       - Version bump: ${{ github.event.inputs.version_type }}
+                  files: ${{ steps.app-dir.outputs.app_dir }}/${{ steps.package-info.outputs.package_name }}-${{ steps.package-info.outputs.package_version }}.vsix
                   draft: false
                   prerelease: false
-
-            - name: Upload Release Asset
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ${{ steps.app-dir.outputs.app_dir }}/${{ steps.package-info.outputs.package_name }}-${{ steps.package-info.outputs.package_version }}.vsix
-                  asset_name: ${{ steps.package-info.outputs.package_name }}-${{ steps.package-info.outputs.package_version }}.vsix
-                  asset_content_type: application/octet-stream
 
             # - name: Commit version changes
             #   run: |
